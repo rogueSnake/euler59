@@ -36,13 +36,25 @@ class Dictionary < Database
 end
 
 class Cipher_keeper < Database
+  def start_decryption(key)
+    character_1 = key.slice(0, 1)
+    character_2 = key.slice(1, 2)
+    character_3 = key.slice(2, 3)
+    i = 1
+    current_character = 0
+    (0..20).each_with_object([]) do |data_index, decrypted_data|
+      current_character = key.slice(i - 1, i).ord
+      decrypted_data.push((@data[data_index].to_i^current_character).chr)
+      i == 3 ? i = 1 : i += 1
+    end.join
+  end
+
   def attempt_decryption(key)
     character_1 = key.slice(0, 1)
     character_2 = key.slice(1, 2)
     character_3 = key.slice(2, 3)
     i = 1
     current_character = 0
-    #puts @data
     @data.each_with_object([]) do |encrypted_datum, decrypted_data|
       current_character = key.slice(i - 1, i).ord
       decrypted_data.push((encrypted_datum.to_i^current_character).chr)
@@ -66,7 +78,8 @@ cipher_keeper = Cipher_keeper.new("cipher.txt")
 #puts cipher_keeper.attempt_decryption('cat')
 
 j = 0
-('aaa'..'zzz').each do |possible_key|
-  puts cipher.attempt_decryption(possible_key) if ((dictionary.search_for_words(cipher_keeper.attempt_decryption(possible_key))) > 10)
+('aaa'..'zzz').each_with_object([]) do |possible_key, probable_keys|
+  probable_keys.push(possible_key) if ((dictionary.search_for_words(cipher_keeper.start_decryption(possible_key))) > 1)
+end.each do |probable_key|
+  puts cipher_keeper.attempt_decryption(probable_key) if (dictionary.search_for_words(cipher_keeper.attempt_decryption(probable_key)) > 10)
 end
-
