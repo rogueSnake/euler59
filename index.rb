@@ -1,27 +1,26 @@
-
-binary_cipher = File.open("cipher.txt", "r") do |file|
-  file.each_line.with_object([]) do |line, words|
-    words.push(line)
-  end
-end
-
-def get_real_words()
-  words = File.open("english_words.txt", "r") do |file|
-    file.each_line.with_object([]) do |line, words|
-      words.push(line)
+class Database
+  attr_accessor :data
+  def initialize(data)
+    @data = File.open(data, "r") do |file|
+      file.each_line.with_object([]) do |line, words|
+        words.push(line)
+      end
     end
   end
-  def get_real_words ()
-    words
-  end
-  puts words
-end
+
+end 
+
+dictionary = Database.new("english_words.txt")
+cipher_keeper = Database.new("cipher.txt")
 
 def is_real_word?(possible_word)
-  words.each do |real_word|
+  dictionary.data.each do |real_word|
+    puts real_word
+    puts possible_word
+    puts (possible_word == real_word)
     return true if (possible_word == real_word)
   end
-  return false
+  false
 end
 
 def search_for_words(text)
@@ -30,9 +29,9 @@ def search_for_words(text)
     real_words.push(possible_word) if is_real_word?(possible_word)
   end.length
 end
-
-puts get_real_words()
-
+puts $dictionary
+puts is_real_word?("heilaHitler!")
+puts is_real_word?("vacuum")
 #puts is_real_word?("dog")
 
 #puts search_for_words("I'm not a Brooster, I'm the son of a sea cook!")
